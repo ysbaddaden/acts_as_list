@@ -78,6 +78,10 @@ module ActiveRecord
         def insert_at(position = 1)
           insert_at_position(position)
         end
+       
+        def move_to(position = 1)
+          move_to_position(position)
+        end
 
         # Swap positions with the next lower item, if one exists.
         def move_lower
@@ -245,11 +249,41 @@ module ActiveRecord
             )
           end
 
+          # This has the effect of moving all items between two positions (inclusive) up one.
+          def decrement_positions_between(low, high)
+            acts_as_list_class.update_all(
+              "#{position_column} = (#{position_column} - 1)", ["#{scope_condition} AND #{position_column} >= ? AND #{position_column} <= ?", low, high]
+            )
+          end
+
+          # This has the effect of moving all items between two positions (inclusive) down one.
+          def increment_positions_between(low, high)
+            acts_as_list_class.update_all(
+              "#{position_column} = (#{position_column} + 1)", ["#{scope_condition} AND #{position_column} >= ? AND #{position_column} <= ?", low, high]
+            )
+          end
+
           def insert_at_position(position)
             remove_from_list
             increment_positions_on_lower_items(position)
             self.update_attribute(position_column, position)
           end
+
+          # Moves an existing list element to the "new_position" slot.
+          def move_to_position(new_position)
+            old_position = self.send(position_column)
+            unless new_position == old_position
+              if new_position < old_position
+                # Moving higher in the list (up)
+                increment_positions_between(new_position, old_position - 1)
+              else 
+                # Moving lower in the list (down)
+                decrement_positions_between(old_position + 1, new_position)
+              end
+              self.update_attribute(position_column, new_position)
+            end
+          end
+
       end 
     end
   end

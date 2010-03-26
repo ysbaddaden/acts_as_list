@@ -156,6 +156,20 @@ class ListTest < Test::Unit::TestCase
     assert_equal 5, new4.pos
   end
 
+  def test_move_to_lower_in_list
+    assert_equal [1, 2, 3, 4], ListMixin.find(:all, :conditions => 'parent_id = 5', :order => 'pos').map(&:id)
+    item = ListMixin.find(2)
+    item.move_to(3)
+    assert_equal [1, 3, 2, 4], ListMixin.find(:all, :conditions => 'parent_id = 5', :order => 'pos').map(&:id)
+  end
+
+  def test_move_to_higher_in_list
+    assert_equal [1, 2, 3, 4], ListMixin.find(:all, :conditions => 'parent_id = 5', :order => 'pos').map(&:id)
+    item = ListMixin.find(2)
+    item.move_to(1)
+    assert_equal [2, 1, 3, 4], ListMixin.find(:all, :conditions => 'parent_id = 5', :order => 'pos').map(&:id)
+  end
+
   def test_delete_middle
     assert_equal [1, 2, 3, 4], ListMixin.find(:all, :conditions => 'parent_id = 5', :order => 'pos').map(&:id)
 
@@ -309,6 +323,20 @@ class ListSubTest < Test::Unit::TestCase
     new4.reload
     assert_equal 5, new4.pos
   end
+
+  def test_move_to_lower_in_list
+    assert_equal [1, 2, 3, 4], ListMixin.find(:all, :conditions => 'parent_id = 5000', :order => 'pos').map(&:id)
+    item = ListMixin.find(2)
+    item.move_to(3)
+    assert_equal [1, 3, 2, 4], ListMixin.find(:all, :conditions => 'parent_id = 5000', :order => 'pos').map(&:id)
+  end
+
+  def test_move_to_higher_in_list
+    assert_equal [1, 2, 3, 4], ListMixin.find(:all, :conditions => 'parent_id = 5000', :order => 'pos').map(&:id)
+    item = ListMixin.find(2)
+    item.move_to(1)
+    assert_equal [2, 1, 3, 4], ListMixin.find(:all, :conditions => 'parent_id = 5000', :order => 'pos').map(&:id)
+  end  
 
   def test_delete_middle
     assert_equal [1, 2, 3, 4], ListMixin.find(:all, :conditions => 'parent_id = 5000', :order => 'pos').map(&:id)
