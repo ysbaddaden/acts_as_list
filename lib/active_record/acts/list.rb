@@ -275,9 +275,11 @@ module ActiveRecord
             unless new_position == old_position
               if new_position < old_position
                 # Moving higher in the list (up)
+                new_position = [1, new_position].max
                 increment_positions_between(new_position, old_position - 1)
               else 
                 # Moving lower in the list (down)
+                new_position = [bottom_position_in_list(self).to_i, new_position].min
                 decrement_positions_between(old_position + 1, new_position)
               end
               self.update_attribute(position_column, new_position)

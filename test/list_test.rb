@@ -161,6 +161,9 @@ class ListTest < Test::Unit::TestCase
     item = ListMixin.find(2)
     item.move_to(3)
     assert_equal [1, 3, 2, 4], ListMixin.find(:all, :conditions => 'parent_id = 5', :order => 'pos').map(&:id)
+    item.move_to(7)
+    assert_equal [1, 3, 4, 2], ListMixin.find(:all, :conditions => 'parent_id = 5', :order => 'pos').map(&:id)
+    assert_equal 4, item.pos
   end
 
   def test_move_to_higher_in_list
@@ -168,6 +171,9 @@ class ListTest < Test::Unit::TestCase
     item = ListMixin.find(2)
     item.move_to(1)
     assert_equal [2, 1, 3, 4], ListMixin.find(:all, :conditions => 'parent_id = 5', :order => 'pos').map(&:id)
+    item.move_to(-2)
+    assert_equal [2, 1, 3, 4], ListMixin.find(:all, :conditions => 'parent_id = 5', :order => 'pos').map(&:id)
+    assert_equal 1, item.pos
   end
 
   def test_delete_middle
